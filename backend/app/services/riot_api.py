@@ -48,6 +48,16 @@ def get_match_ids_by_puuid(puuid:str, region:str, count: int = 5):
     response = requests.get(url, headers=headers, params=params)
 
     if response.status_code != 200:
-        raise Exception(F"Riot API error: {response.status_code} - {response.text}")
+        raise Exception(f"Riot API error: {response.status_code} - {response.text}")
 
+    return response.json()
+
+def get_match_details_by_id(match_id:str, region:str) -> dict:
+    url = f"https://{region}.api.riotgames.com/lol/match/v5/matches/{match_id}"
+    headers = {"X-Riot-Token": RIOT_API_KEY}
+
+    print("[DEBUG] Calling Match Details API:", url)
+
+    response = requests.get(url, headers=headers)
+    response.raise_for_status()
     return response.json()
