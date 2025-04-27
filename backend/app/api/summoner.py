@@ -55,4 +55,14 @@ def get_match_details(region: str, match_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.get("/match-details/{match_id}")
+def get_match_details(match_id: str):
+    try:
+        match_details = get_match_details_by_id(match_id)
+        return {
+            "success": True,
+            "data": match_details
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
