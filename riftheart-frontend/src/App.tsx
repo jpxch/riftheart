@@ -4,6 +4,7 @@ function App() {
   const [riotId, setRiotId] = useState("");
   const [playerData, setPlayerData] = useState<any>(null);
   const [matchIds, setMatchIds] = useState<string[]>([]);
+  const [selectedMatch, setSelectedMatch] = useState<any>(null);
 
   const fetchPlayer = async () => {
     if (!riotId.trim()) {
@@ -24,13 +25,13 @@ function App() {
   };
 
   const fetchMatchHistory = async () => {
-    if (!playerData?.puuid || !playerData?.tagLine) {
-      console.log("No PUUID or platform available to fetch matches.");
+    if (!playerData?.puuid || !playerData?.region) {
+      console.log("No PUUID or region available to fetch matches.");
       return;
     }
 
     const res = await fetch(
-      `http://127.0.0.1:8000/matches/${playerData.puuid}/${playerData.tagLine}`
+      `http://127.0.0.1:8000/matches/${playerData.puuid}/${playerData.region}`
     );
     const data = await res.json();
 
@@ -39,6 +40,18 @@ function App() {
     } else {
       setMatchIds([]);
       console.log("Failed to fetch match history.");
+    }
+  };
+
+  const fetchMatchDeails = async (matchId: string) => {
+    const res = await fetch(`http://127.0.0.1:8000/match-details/$matchId`);
+    const data = await res.json();
+
+    if (data.success) {
+      setSelectedMatch(data.data);
+    } else {
+      setSelectedMatch(null);
+      console.log("Failed to fetch match details.");
     }
   };
 
@@ -95,14 +108,42 @@ function App() {
               <h2>Recent Matches</h2>
               <ul>
                 {matchIds.map((matchId) => (
-                  <li key={matchId}>{matchId}</li>
+                  <li key={matchId}>
+                    <button
+                      onClick={() => fetchMatchDetails(matchId)}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        color: "#82aaff",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {matchId}
+                    </button>
+                  </li>
                 ))}
               </ul>
             </div>
           )}
         </div>
       )}
+      {selectedMatch && (
+        <div style={{ marginTop: "2rem" }}>
+          <h2>Match Details</h2>
+          <pre
+            style={{
+              background: "#1e2130",
+              padding: "1rem",
+              borderRadius: "8px",
+              color: "#c3e88d",
+            }}
+          >
+            {JSON.stringify(selectedMatch, null, 2)}
+          </pre>
+        </div>
+      )}
     </div>
   );
 }
+
 export default App;
