@@ -2,7 +2,8 @@ from fastapi import APIRouter, HTTPException
 from app.services.riot_api import (
     get_puuid_by_riot_id,
     get_match_ids_by_puuid,
-    get_match_details_by_id
+    get_match_details_by_id,
+    get_region_from_tagline,
 
 )
 
@@ -30,25 +31,15 @@ def lookup_account(riot_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/matches/{riot_id}")
-def get_matches(riot_id: str):
-    if "#" not in riot_id:
-        raise HTTPException(status_code=400, detail="Invalid Riot ID. Use format name#tagline")
-
-    name, tagline = riot_id.split("#")
-
+@router.get("/matches/{puuid}/{platform}")
+def get_matches_by_puuid(puuid: str, platform: str):
     try:
-        account_info = get_puuid_by_riot_id(name, tagline)
-        puuid = account_info["puuid"]
-        region = account_info["region"]
-
+        region = get_region_from_tagline(platform)
         match_ids = get_match_ids_by_puuid(puuid, region)
 
         return {
             "success": True,
-            "data": {
-                "matchIds": match_ids
-            }
+            "data": match_ids
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -63,3 +54,5 @@ def get_match_details(region: str, match_id: str):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
