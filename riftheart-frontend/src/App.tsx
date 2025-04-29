@@ -43,8 +43,8 @@ function App() {
     }
   };
 
-  const fetchMatchDeails = async (matchId: string) => {
-    const res = await fetch(`http://127.0.0.1:8000/match-details/$matchId`);
+  const fetchMatchDetails = async (matchId: string) => {
+    const res = await fetch(`http://127.0.0.1:8000/match-details/${matchId}`);
     const data = await res.json();
 
     if (data.success) {
