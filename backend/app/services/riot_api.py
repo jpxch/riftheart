@@ -1,4 +1,5 @@
 import requests
+from fastapi import HTTPException
 from app.config import RIOT_API_KEY
 
 def get_region_from_tagline(tagline: str) -> str:
@@ -52,12 +53,12 @@ def get_match_ids_by_puuid(puuid:str, region:str, count: int = 5):
 
     return response.json()
 
-def get_match_details_by_id(match_id:str, region:str) -> dict:
-    url = f"https://{region}.api.riotgames.com/lol/match/v5/matches/{match_id}"
+def get_match_details_by_id(match_id:str):
+    url = f"https://americas.api.riotgames.com/lol/match/v5/matches/{match_id}"
     headers = {"X-Riot-Token": RIOT_API_KEY}
-
-    print("[DEBUG] Calling Match Details API:", url)
-
     response = requests.get(url, headers=headers)
-    response.raise_for_status()
-    return response.json()
+
+    if response.status_code == 200:
+        return response.json()
+    else:
+        raise HTTPException(status_code=response.status_code, detail=f"Riot API errror: {response.text}")
