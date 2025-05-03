@@ -1,4 +1,7 @@
 import { useState } from "react";
+import MatchDetailsView from "./components/MatchDetails/MatchDetailsView";
+import { getCurrentPatch } from "./utils/getCurrentPatch";
+import { setPatchVersion } from "./utils/mappings";
 
 function App() {
   const [riotId, setRiotId] = useState("");
@@ -7,40 +10,20 @@ function App() {
   const [selectedMatch, setSelectedMatch] = useState<any>(null);
 
   const fetchPlayer = async () => {
-    if (!riotId.trim()) {
-      console.log("No Riot ID entered!");
-      return;
-    }
+    if (!riotId.trim()) return;
     const encoded = encodeURIComponent(riotId.trim());
     const res = await fetch(`http://127.0.0.1:8000/player/${encoded}`);
     const data = await res.json();
-
-    if (data.success) {
-      setPlayerData(data.data);
-      console.log("Fetched Player Data:", data.data);
-    } else {
-      setPlayerData(null);
-      console.log("Fetch failed, data");
-    }
+    if (data.success) setPlayerData(data.data);
   };
 
   const fetchMatchHistory = async () => {
-    if (!playerData?.puuid || !playerData?.region) {
-      console.log("No PUUID or region available to fetch matches.");
-      return;
-    }
-
+    if (!playerData?.puuid || !playerData?.region) return;
     const res = await fetch(
       `http://127.0.0.1:8000/matches/${playerData.puuid}/${playerData.region}`
     );
     const data = await res.json();
-
-    if (data.success) {
-      setMatchIds(data.data);
-    } else {
-      setMatchIds([]);
-      console.log("Failed to fetch match history.");
-    }
+    if (data.success) setMatchIds(data.data);
   };
 
   const fetchMatchDetails = async (matchId: string) => {
@@ -48,16 +31,13 @@ function App() {
     const data = await res.json();
 
     if (data.success) {
+      const patch = await getCurrentPatch();
+      setPatchVersion(patch);
       setSelectedMatch(data.data);
+      console.log("Match data received:", data.data);
     } else {
-      setSelectedMatch(null);
-      console.log("Failed to fetch match details.");
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      fetchPlayer();
+      selectedMatch(null);
+      console.log("Failed to fetch match details");
     }
   };
 
@@ -69,7 +49,7 @@ function App() {
         type="text"
         value={riotId}
         onChange={(e) => setRiotId(e.target.value)}
-        onKeyDown={handleKeyDown}
+        onKeyDown={(e) => e.key === "Enter" && fetchPlayer()}
         placeholder="Enter Riot ID (e.g., Summoner#NA1)"
         style={{ padding: "0.5rem", fontSize: "1rem", width: "300px" }}
       />
@@ -109,15 +89,7 @@ function App() {
               <ul>
                 {matchIds.map((matchId) => (
                   <li key={matchId}>
-                    <button
-                      onClick={() => fetchMatchDetails(matchId)}
-                      style={{
-                        background: "none",
-                        border: "none",
-                        color: "#82aaff",
-                        cursor: "pointer",
-                      }}
-                    >
+                    <button onClick={() => fetchMatchDetails(matchId)}>
                       {matchId}
                     </button>
                   </li>
@@ -127,21 +99,7 @@ function App() {
           )}
         </div>
       )}
-      {selectedMatch && (
-        <div style={{ marginTop: "2rem" }}>
-          <h2>Match Details</h2>
-          <pre
-            style={{
-              background: "#1e2130",
-              padding: "1rem",
-              borderRadius: "8px",
-              color: "#c3e88d",
-            }}
-          >
-            {JSON.stringify(selectedMatch, null, 2)}
-          </pre>
-        </div>
-      )}
+      {selectedMatch && <MatchDetailsView matchData={selectedMatch} />}
     </div>
   );
 }

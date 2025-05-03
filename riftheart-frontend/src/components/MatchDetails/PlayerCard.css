@@ -1,0 +1,85 @@
+.player-card {
+  background: linear-gradient(145deg, #0a0118, #110022);
+  border: 1px solid rgba(138, 43, 226, 0.4);
+  border-radius: 16px;
+  padding: 16px;
+  margin: 12px 0;
+  color: #e3d7ff;
+  font-family: "Segoe UI", sans-serif;
+  box-shadow: 0 0 15px rgba(186, 85, 211, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.player-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(221, 160, 221, 0.5);
+}
+
+.top-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.champion-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  margin-right: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.champion-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.champion-name {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #f5e1ff;
+}
+
+.champion-level {
+  font-size: 0.85rem;
+  color: #bc94ff;
+  margin-left: 6px;
+}
+
+.summoner-name {
+  font-size: 0.9rem;
+  color: #9e82d9;
+}
+
+.summoner-spells,
+.runes,
+.items {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.spell-icon,
+.rune-icon,
+.item-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.spell-icon:hover,
+.rune-icon:hover,
+.item-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+}
+
+.stats {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #d6bfff;
+}

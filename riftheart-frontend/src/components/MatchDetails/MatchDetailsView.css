@@ -1,0 +1,19 @@
+.team-label {
+  font-size: 1.3rem;
+  margin-top: 32px;
+  color: #e3d7ff;
+}
+
+.blue-label {
+  color: #7bdfff;
+}
+
+.red-label {
+  color: #ff798a;
+}
+
+.team-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
